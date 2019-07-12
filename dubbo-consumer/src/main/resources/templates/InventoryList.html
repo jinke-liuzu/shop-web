@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--bootstrap样式-->
+    <link rel="stylesheet" href="/js/bootstrap3/css/bootstrap.css">
+    <link rel="stylesheet" href="/js/bootstrap3/css/bootstrap-theme.css">
+
+    <script src="/js/jquery.min.js"></script>
+    <!--弹框-->
+    <script src="/js/bootstrap-bootbox/bootbox.js"></script>
+
+    <script src="/js/bootstrap3/js/bootstrap.js"></script>
+
+    <link rel="stylesheet" href="/js/bootstrap-table/bootstrap-table.css">
+    <script src="/js/bootstrap-table/bootstrap-table.js"></script>
+    <script src="/js/bootstrap-table/bootstrap-table-locale-all.js"></script>
+    <script src="/js/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+
+</head>
+<body>
+<form class="form-inline">
+    <table>
+        <tr>
+            <td>编号</td>
+            <td><input type="text" id="serchNumber" class="form-control" /></td>
+            <td colspan="2">
+                <div class="text-center">
+                    <button type="button" onclick="sercherQuery()" class="btn btn-info"><span class="glyphicon glyphicon-search">搜索</span> </button>
+                </div>
+            </td>
+        </tr>
+
+    </table>
+
+</form>
+<table id="myTable"></table>
+</body>
+<script>
+    $(function(){
+        initInventoryTable();
+    })
+    //查询
+    function initInventoryTable(){
+        $("#myTable").bootstrapTable({
+            url:'/inventory/queryRepertory',
+            toolbar:'#toolbar',
+            method: 'post',
+            showRefresh:true,
+            contentType: 'application/x-www-form-urlencoded',//posti求按照表单方式
+            pagination:true,
+            pageList:[2,4,8,15,30],
+            pageNumber:1,
+            pageSize:2,
+            sidePagination:'server',
+            //是否显示斑马线
+            striped:true,
+            queryParams:function(){
+                return {
+                    page:this.pageNumber,
+                    rows:this.pageSize
+                };
+            },
+            columns:[
+                {field:"abc",checkbox:true},
+
+                {field:"number",title:"编号",width:150},
+                {field:"commodity",title:"商品",width:250},
+                {field:"type",title:"类型",width:150},
+                {field:"quantity",title:"入库数量",width:150},
+                {field:"delivery",title:"出库数量",width:150},
+                {field:"current",title:"当前库存",width:150},
+                {field:"remark",title:"简介",width:150},
+                {field:"createTimes",title:"创建日期",width:150}
+
+            ]
+        })
+    }
+    function sercherQuery(){
+
+        var serchNumber=$("#serchNumber").val();
+
+
+        $("#myTable").bootstrapTable('refresh',{
+
+            query:{
+                number:serchNumber
+
+
+            }
+
+        })
+    }
+</script>
+</html>

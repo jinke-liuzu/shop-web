@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.mapper.LabelHxyMapper">
+
+    <select id="countLabel" parameterType="com.jk.pojo.LabelHxyBean" resultType="int">
+
+        select count(1) from t_label
+        <include refid="labelWhere"></include>
+
+    </select>
+    <select id="findLabel"  resultType="com.jk.pojo.LabelHxyBean">
+
+        select * from t_label
+        <include refid="labelWhere"></include>
+        limit #{start},#{rows}
+    </select>
+    <sql id="labelWhere">
+
+        <where>
+            <if test="labelHxyBean.name!=null and labelHxyBean.name!=''">
+
+                and name like '%${labelHxyBean.name}%'
+            </if>
+
+        </where>
+    </sql>
+    <delete id="deleteLabel"  parameterType="int">
+        delete from t_label where id in (
+
+        <foreach collection="array" index="index" item="item" separator=",">
+            #{item}
+        </foreach>
+
+        )
+
+    </delete>
+
+
+</mapper>

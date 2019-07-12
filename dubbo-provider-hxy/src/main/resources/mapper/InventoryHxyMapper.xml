@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.mapper.InventoryHxyMapper">
+<select id="countPage" parameterType="com.jk.pojo.InventoryHxyBean" resultType="int">
+
+   select  count(1) from t_inventory t left join  ldl_commodity_manage m on t.number = m.number
+    <include refid="inventoryWhere"></include>
+</select>
+    <select id="findInventoryPage" resultType="com.jk.pojo.InventoryHxyBean">
+
+   select  t.number,m.name as commodity,t.type,t.quantity,t.delivery,t.current ,t.remark,m.datetime as createTimes from t_inventory t left join  ldl_commodity_manage m on t.number = m.number
+
+        <include refid="inventoryWhere"></include>
+          limit #{start},#{rows}
+
+
+    </select>
+    <sql id="inventoryWhere">
+       <where>
+           <if test="inventoryHxyBean.number!=null and inventoryHxyBean.number!=''">
+                  and t.number=#{inventoryHxyBean.number}
+           </if>
+
+       </where>
+
+    </sql>
+
+</mapper>
