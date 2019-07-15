@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.mapper.ldlMapper" >
+<select id="findOrderCount" parameterType="map" resultType="int">
+select count(1) from ldl_goods_classify
+</select>
+
+<select id="findOrderList" parameterType="map" resultType="com.jk.pojo.ldl_goods_classify">
+   select  * from ldl_goods_classify limit #{page},#{rows}
+</select>
+<select id="findUserTotal" parameterType="com.jk.pojo.ldl_commodity_manage" resultType="int">
+select
+	count(1)
+from
+	ldl_commodity_manage c
+LEFT JOIN ldl_goods_classify g ON c.goodsid = g.id
+LEFT JOIN t_inventory i ON c.number = i.number
+	<include refid="CommodityWhere"></include>
+</select>
+<select id="findUserPage" resultType="com.jk.pojo.ldl_commodity_manage">
+select
+	c.id AS id,
+	c.number AS number,
+	c. name as name,
+	c.datetime as datetime,
+	c.state as state,
+	c.url as url,
+	g.text as goodsname,
+	i.money as money
+FROM
+	ldl_commodity_manage c
+LEFT JOIN ldl_goods_classify g ON c.goodsid = g.id
+LEFT JOIN t_inventory i ON c.number = i.number
+<include refid="CommodityWhere"></include>
+limit #{start},#{rows}
+</select>
+	<sql id="CommodityWhere">
+		<where>
+			<if test="commodity.name !=null and commodity.name !=''">
+				and (c.name like '%${commodity.name}%' or c.number = #{commodity.name})
+			</if>
+			<if test="commodity.startTime !=null and commodity.startTime !=''">
+				and c.datetime > date_format(#{commodity.startTime},'%Y-%m-%d %H:%i:%s')
+			</if>
+			<if test="commodity.endTime !=null and commodity.endTime !=''">
+				and c.datetime &lt; date_format(#{commodity.endTime},'%Y-%m-%d %H:%i:%s')
+			</if>
+			<if test="commodity.state !=null and commodity.state !=-1">
+				and c.state=#{commodity.state}
+			</if>
+		</where>
+	</sql>
+	<delete id="deleteBook" parameterType="int">
+		delete  from  ldl_commodity_manage  where  id in
+		<foreach collection="array" item="item" index="index" open="(" close=")" separator=",">
+		#{item}
+		</foreach>
+	</delete>
+</mapper>

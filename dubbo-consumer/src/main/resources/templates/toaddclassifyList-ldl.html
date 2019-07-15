@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 时间 -->
+    <link rel="stylesheet" href="/ldl/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
+    <script src="/ldl/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+    <script src="/ldl/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="/ldl/js/area.js"></script>
+
+</head>
+<body>
+<div class="container-fluid">
+    <form id="bookForm" class="form-horizontal">
+        <table id="gameTable"></table>
+        <div  class="form-group">
+            <label for="addname" class="col-sm-1 control-label">名称</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="addname" name="name">
+            </div>
+            <label for="addgeneralstore" class="col-sm-1 control-label">普通店铺分佣比例</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="addgeneralstore" name="generalstore">
+            </div>
+            <label for="addownstores" class="col-sm-1 control-label">自营店铺分佣比例</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="addownstores" name="ownstores">
+            </div>
+        </div>
+
+        <div  class="form-group">
+
+            <label  class="col-sm-1 control-label">类型</label>
+            <div class="col-sm-7">
+                <div class="input-group">
+                    <select class="form-control" id="addid" name="id"></select>
+                    <div class="input-group-addon">-</div>
+                    <select class="form-control" id="addpid" name="pid">
+                        <option value="-1">请选择</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+
+    </form>
+    <div class="form-group">
+        <button class="btn btn-danger" data-toggle="modal" data-target="#myModa" onclick="addAllgame()">
+            批量新增
+        </button>
+    </div>
+
+</div>
+</body>
+<script>
+    $(function () {
+        initArea(0,'/ldl/findArea','addid','addpid');
+    })
+    //批量新增
+    addAllgame = function(){
+        dialog2("<%=request.getContextPath()%>/ldl/toPLaddclass", "<%=request.getContextPath()%>/ldl/addAllgames.do","批量新增");
+    }
+    function dialog2(HTMLUrl,submitUrl,title){
+
+        var dialog=bootbox.dialog({
+
+            title:title,
+            message:getJspHtml2(HTMLUrl),
+            buttons:{
+                "save":{
+                    label:'保存',
+                    className:"btn-success",
+                    callback:function(){
+                        $.ajax({
+                            url:submitUrl,
+                            type:"post",
+                            data:$("#fffff").serialize(),
+                            success:function(data){
+                                bootbox.alert("保存成功");
+                                $("#gameTable").bootstrapTable('refresh');
+                            },
+                            error:function(){
+                                bootbox.alert("ajax失败");
+                            }
+                        })
+                    }
+                },
+                "unSave":{
+                    label:'取消',
+                    className:"btn-info",
+                    callback:function(){
+
+                    }
+                }
+            }
+        })
+    }
+    //通过ajax获取弹框页面的内容
+    function getJspHtml2(urlStr){
+        var jspHtml="";
+
+        $.ajax({
+            url:urlStr,
+            type:'post',
+            async:false,
+            success:function(data){
+                jspHtml=data;
+            },
+            error:function(){
+                bootbox.alert("ajax失败1");
+            }
+        })
+        return jspHtml;
+    }
+
+</script>
+</html>

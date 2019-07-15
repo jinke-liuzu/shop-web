@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--&lt;!&ndash;bootstrap样式&ndash;&gt;
+    <link rel="stylesheet" href="/js/bootstrap3/css/bootstrap.css">
+    <link rel="stylesheet" href="/js/bootstrap3/css/bootstrap-theme.css">
+
+    <script src="/js/jquery.min.js"></script>
+    &lt;!&ndash;弹框&ndash;&gt;
+    <script src="/js/bootstrap-bootbox/bootbox.js"></script>
+
+    <script src="/js/bootstrap3/js/bootstrap.js"></script>
+
+    <link rel="stylesheet" href="/js/bootstrap-table/bootstrap-table.css">
+    <script src="/js/bootstrap-table/bootstrap-table.js"></script>
+    <script src="/js/bootstrap-table/bootstrap-table-locale-all.js"></script>
+    <script src="/js/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+
+    &lt;!&ndash; 时间 &ndash;&gt;
+    <link rel="stylesheet" href="/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
+    <script src="/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+    <script src="/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>-->
+    <link rel="stylesheet" href="/ldl/js/bootstrap3/css/bootstrap.css">
+    <link rel="stylesheet" href="/ldl/js/bootstrap3/css/bootstrap-theme.css">
+    <script src="/ldl/js/jquery.min.js"></script>
+    <!---->
+    <!--弹框-->
+    <script type="text/javascript" src="/ldl/js/bootstrap-bootbox/bootbox.js"></script>
+
+    <script type="text/javascript" src="/ldl/js/bootstrap3/js/bootstrap.js"></script>
+
+    <link rel="stylesheet" href="/ldl/js/bootstrap-table/bootstrap-table.css">
+    <script type="text/javascript" src="/ldl/js/bootstrap-table/bootstrap-table.js"></script>
+    <script type="text/javascript" src="/ldl/js/bootstrap-table/bootstrap-table-locale-all.js"></script>
+    <script type="text/javascript" src="/ldl/js/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+    <!-- 时间 -->
+    <link rel="stylesheet" href="/ldl/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
+
+    <script src="/ldl/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+    <script src="/ldl/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-TW.js"></script>
+</head>
+<body>
+<button type="button" onclick="addBook()" class="btn btn-info glyphicon glyphicon-plus">新增</button>
+
+<table class="table" id="myTable"></table>
+
+</body>
+<script>
+    $(function(){
+        initBookTable();
+    })
+    //查询
+    function initBookTable(){
+        $("#myTable").bootstrapTable({
+            url:'/ldl/queryclassify',
+            toolbar:'#toolbar',
+            method: 'post',
+            contentType: 'application/x-www-form-urlencoded',//posti求按照表单方式
+            pagination:true,//是否展示分页
+            showRefresh:true,
+            pageNamber:1,//起始页
+            pageSize:2,//每页条数
+            pageList:[2,5,10,20],
+            sidePagination:'server',//分页方式：client客户端分页，server服务端分页（*
+            striped:true,//是否显示斑马线
+            queryParams:function(){
+                return {
+                    page:this.pageNumber,
+                    rows:this.pageSize
+                };
+            },
+            columns:[
+                {field:"text",title:"名称"},
+                {field:"order",title:"排序",width:150},
+                {field:"generalstore",title:"普通店铺分佣比例",width:150},
+                {field:"ownstores",title:"自营店铺分佣比例",width:150},
+                {field:"url",title:"操作",formatter:function(value,row,index){
+                        var str = "<a href="+value+">&nbsp;&nbsp;查看&nbsp;&nbsp;</a>";
+                         str += "|<a href='javascript:editbook("+row.id+")'>&nbsp;&nbsp;修改&nbsp;&nbsp;</a>";
+                        str+="|<a href='javascript:deleteOne("+row.id+")'>&nbsp;删除&nbsp;</a>";
+                        return str;
+                    }}
+            ]
+        })
+    }
+    function deleteOne(id){
+        var msg = "您真的确定要删除吗？\n\n请确认！";
+
+        if(confirm(msg)==true){
+            $.ajax({
+                url:'/ldl/deleteclassifylist',
+                type:'post',
+                data:{id:id},
+                success:function(data){
+                    if(data){
+                        $("#myTable").bootstrapTable('refresh')
+                    }
+                }
+            })
+        }
+    }
+
+    //新增弹框
+    function addBook(){
+        var dialog =bootbox.dialog({
+            title: '添加',
+            message: createAddContent('/ldl/toaddclassifyList'),
+            size: 'large',
+            buttons:{
+                cancel:{
+                    label: "取消",
+                    className: 'btn-danger',
+                    callback: function(){
+
+                    }
+                },
+                ok:{
+                    label: "保存",
+                    className: 'btn-info',
+                    callback: function(){
+                        saveBook();
+                    }
+                }
+            }
+        });
+
+    }
+
+    //跳转路径
+    var res;
+    function createAddContent(url){
+        $.ajax({
+            url:url,
+            async:false,
+            success:function(data){
+                res = data;
+            }
+        });
+        return res;
+    }
+    //具体新增
+    function saveBook() {
+        $.ajax({
+            url:'/ldl/saveclassify',
+            type:'post',
+            data:$("#bookForm").serialize(),
+            dataType:'json',
+            success:function (data) {
+                if(data){
+                    initBookTable();
+                }else{
+                    bootbox.alert({
+                        size:'small',
+                        title:'提示',
+                        message:'保存失败',
+                    })
+                }
+            }
+        })
+    }
+
+
+</script>
+</html>

@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @EnableDubboConfiguration//识别dubbo的注解
-@MapperScan("com.jk.dao")
+@MapperScan(basePackages ={"com.jk.mapper"})
 public class DubboProviderApplication {
 
     public static void main(String[] args) {
