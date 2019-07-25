@@ -15,6 +15,24 @@ public class ldl_commodity_manage implements Serializable {
     private String goodsname;
     private Integer money;
     private String url;
+    private Integer current;
+    private Integer quantity;
+
+    public Integer getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(Integer current) {
+        this.current = current;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
     public String getUrl() {
         return url;
@@ -122,6 +140,8 @@ public class ldl_commodity_manage implements Serializable {
                 ", goodsname='" + goodsname + '\'' +
                 ", money=" + money +
                 ", url='" + url + '\'' +
+                ", current=" + current +
+                ", quantity=" + quantity +
                 '}';
     }
 }

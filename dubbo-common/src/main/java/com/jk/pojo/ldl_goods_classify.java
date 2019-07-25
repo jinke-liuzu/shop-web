@@ -1,6 +1,7 @@
 package com.jk.pojo;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class ldl_goods_classify implements Serializable {
     private static final long serialVersionUID = -8606162121852497855L;
@@ -12,6 +13,25 @@ public class ldl_goods_classify implements Serializable {
     private Integer pid;
     private String url;
     private String examine;
+
+    private List<ldl_goods_classify> nodes;
+    private Boolean selectable;//标识节点能不能点击
+
+    public List<ldl_goods_classify> getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(List<ldl_goods_classify> nodes) {
+        this.nodes = nodes;
+    }
+
+    public Boolean getSelectable() {
+        return selectable;
+    }
+
+    public void setSelectable(Boolean selectable) {
+        this.selectable = selectable;
+    }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -92,6 +112,8 @@ public class ldl_goods_classify implements Serializable {
                 ", pid=" + pid +
                 ", url='" + url + '\'' +
                 ", examine='" + examine + '\'' +
+                ", nodes=" + nodes +
+                ", selectable=" + selectable +
                 '}';
     }
 }
