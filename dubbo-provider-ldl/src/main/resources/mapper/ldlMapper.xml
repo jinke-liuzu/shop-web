@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.jk.mapper.ldlMapper" >
-<select id="findOrderCount" parameterType="map" resultType="int">
-select count(1) from ldl_goods_classify
-</select>
-
-<select id="findOrderList" parameterType="map" resultType="com.jk.pojo.ldl_goods_classify">
-   select  * from ldl_goods_classify limit #{page},#{rows}
-</select>
 <select id="findUserTotal" parameterType="com.jk.pojo.ldl_commodity_manage" resultType="int">
 select
 	count(1)
@@ -32,10 +25,12 @@ FROM
 LEFT JOIN ldl_goods_classify g ON c.goodsid = g.id
 LEFT JOIN t_inventory i ON c.number = i.number
 <include refid="CommodityWhere"></include>
+	order by i.money DESC
 limit #{start},#{rows}
 </select>
 	<sql id="CommodityWhere">
 		<where>
+			c.chezt=0
 			<if test="commodity.name !=null and commodity.name !=''">
 				and (c.name like '%${commodity.name}%' or c.number = #{commodity.name})
 			</if>
@@ -50,10 +45,139 @@ limit #{start},#{rows}
 			</if>
 		</where>
 	</sql>
+
 	<delete id="deleteBook" parameterType="int">
 		delete  from  ldl_commodity_manage  where  id in
 		<foreach collection="array" item="item" index="index" open="(" close=")" separator=",">
 		#{item}
 		</foreach>
 	</delete>
+
+	<select id="daochu" parameterType="int" resultType="com.jk.pojo.ldl_commodity_manage">
+		select
+		c.id AS id,
+		c.number AS number,
+		c. name as name,
+		c.datetime as datetime,
+		c.state as state,
+		c.url as url,
+		i.current as current,
+		i.quantity as quantity,
+		i.money as money,
+		g.text as goodsname
+		FROM
+		ldl_commodity_manage c
+		LEFT JOIN ldl_goods_classify g ON c.goodsid = g.id
+		LEFT JOIN t_inventory i ON c.number = i.number
+		WHERE
+		c.id IN
+		<foreach collection="array" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="countBrand" parameterType="com.jk.pojo.BrandHxyBean" resultType="int">
+  select count(1) from t_brand
+
+</select>
+	<select id="findBrand" resultType="com.jk.pojo.BrandHxyBean">
+
+select *  from t_brand
+ limit #{start},#{rows}
+</select>
+											<!-- - -->
+	<select id="countLabel" parameterType="com.jk.pojo.LabelHxyBean" resultType="int">
+
+		select count(1) from t_label
+		<include refid="labelWhere"></include>
+
+	</select>
+	<select id="findLabel"  resultType="com.jk.pojo.LabelHxyBean">
+
+		select * from t_label
+		<include refid="labelWhere"></include>
+		limit #{start},#{rows}
+	</select>
+	<sql id="labelWhere">
+
+		<where>
+			<if test="labelHxyBean.name !=null and labelHxyBean.name !=''">
+
+				and name like '%${labelHxyBean.name}%'
+			</if>
+
+		</where>
+	</sql>
+	<delete id="deleteLabel"  parameterType="int">
+		delete from t_label where id in (
+
+		<foreach collection="array" index="index" item="item" separator=",">
+			#{item}
+		</foreach>
+
+		)
+
+	</delete>
+	<select id="querychecount" parameterType="com.jk.pojo.ldl_commodity_manage" resultType="int">
+		select
+		count(1)
+		from
+		ldl_commodity_manage c
+		LEFT JOIN ldl_goods_classify g ON c.goodsid = g.id
+		LEFT JOIN t_inventory i ON c.number = i.number
+		where c.chezt=1
+	</select>
+	<select id="queryche" resultType="com.jk.pojo.ldl_commodity_manage">
+		select
+		c.id AS id,
+		c.number AS number,
+		c. name as name,
+		c.datetime as datetime,
+		c.state as state,
+		c.url as url,
+		g.text as goodsname,
+		i.money as money
+		FROM
+		ldl_commodity_manage c
+		LEFT JOIN ldl_goods_classify g ON c.goodsid = g.id
+		LEFT JOIN t_inventory i ON c.number = i.number
+		where c.chezt=1
+		limit #{start},#{rows}
+	</select>
+
+	<!--库存-->
+	<select id="countPage" parameterType="com.jk.pojo.InventoryHxyBean" resultType="int">
+
+		select  count(1) from t_inventory t left join  ldl_commodity_manage m on t.number = m.number
+		<include refid="inventoryWhere"></include>
+	</select>
+	<select id="findInventoryPage" resultType="com.jk.pojo.InventoryHxyBean">
+
+		SELECT
+		t.number,
+		m. NAME AS commodity,
+		t.type,
+		t.quantity,
+		t.money,
+		t.delivery,
+		t.current,
+		t.remark,
+		m.datetime AS createTimes
+		FROM
+		t_inventory t
+		LEFT JOIN ldl_commodity_manage m ON t.number = m.number
+		<include refid="inventoryWhere"></include>
+		limit #{start},#{rows}
+
+
+	</select>
+	<sql id="inventoryWhere">
+		<where>
+			<if test="inventoryHxyBean.number!=null and inventoryHxyBean.number!=''">
+				and t.number=#{inventoryHxyBean.number}
+			</if>
+
+		</where>
+
+	</sql>
 </mapper>
