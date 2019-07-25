@@ -4,12 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
 
-    <link rel="stylesheet" href="/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
-    <script type="text/javascript" src="/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
-    <script type="text/javascript" src="/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
-    <link rel="stylesheet" href="/js/bootstrap-fileinput/css/fileinput.css">
-    <script type="text/javascript" src="/js/bootstrap-fileinput/js/fileinput.js"></script>
-    <script type="text/javascript" src="/js/bootstrap-fileinput/js/locales/zh.js"></script>
+
 </head>
 <body>
 
@@ -25,8 +20,9 @@
       </div>
         <div  class="form-group">
             <div class="col-sm-8">
-                <input type="file" multiple class="projectfile" accept="image/*"  id="inputFile" name="labelImg">
-                <input type="hidden" id="hideImg"  name="img">
+                <input type="file"  class="projectfile"  name="imgg" id="updafileidimg">
+                <input type="text" id="updatextidimg" name="img"/>
+
             </div>
 
 
@@ -55,8 +51,9 @@
 <script>
 
 
-    function huifuImg(url){
-        $('#inputFile').fileinput({
+
+    function uploadImg(url){
+        $('#updafileidimg').fileinput({
             initialPreview:url,
             //初始化图片配置：
             initialPreviewConfig: [
@@ -64,9 +61,8 @@
             ],
             //是否初始化图片显示
             initialPreviewAsData: true,
-
             language: 'zh', //设置语言
-            uploadUrl: '/label/upload.do', //上传的地址
+            uploadUrl: '/ldl/updaloadImg', //上传的地址
             allowedFileExtensions: ['jpg', 'gif', 'png'],//接收的文件后缀
             showUpload: true, //是否显示上传按钮
             showCaption: false,//是否显示标题
@@ -85,11 +81,16 @@
             msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",
 
         }).on('fileuploaded', function(event, data, previewId, index) {
-            var imgval = "http://<%= request.getServerName()%>:<%=request.getServerPort()%><%=request.getContextPath()%>/"+data.response.img;
-            $('#hideImg').val(imgval);
+
+            var imgval = $('#updatextidimg').val();
+
+
+                imgval = data.response.responseText;
+                $('#updatextidimg').val(imgval);
+
+
+
         });
-
-
     }
 </script>
 </html>

@@ -3,24 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="/ldl/js/bootstrap3/css/bootstrap.css">
-    <link rel="stylesheet" href="/ldl/js/bootstrap3/css/bootstrap-theme.css">
-    <script src="/ldl/js/jquery.min.js"></script>
-<!---->
-    <!--弹框-->
-    <script type="text/javascript" src="/ldl/js/bootstrap-bootbox/bootbox.js"></script>
-
-    <script type="text/javascript" src="/ldl/js/bootstrap3/js/bootstrap.js"></script>
-
-    <link rel="stylesheet" href="/ldl/js/bootstrap-table/bootstrap-table.css">
-    <script type="text/javascript" src="/ldl/js/bootstrap-table/bootstrap-table.js"></script>
-    <script type="text/javascript" src="/ldl/js/bootstrap-table/bootstrap-table-locale-all.js"></script>
-    <script type="text/javascript" src="/ldl/js/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
-    <!-- 时间 -->
-    <link rel="stylesheet" href="/ldl/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
-
-    <script src="/ldl/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
-    <script src="/ldl/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-TW.js"></script>
+    <div th:include="index :: header" ></div>
 
 
 </head>
@@ -56,6 +39,8 @@
         </table>
     </form>
     <button type="button" onclick="deleteBook()" class="btn btn-success glyphicon glyphicon-trash">批量删除</button>
+    <button type="button" onclick="INSTRBook()" class="btn btn-success glyphicon glyphicon-edit">导入商品</button>
+    <button type="button" onclick="daochu()" class="btn btn-success glyphicon glyphicon-paste">导出商品</button>
 </div>
 
 <table class="table" id="myTable"></table>
@@ -72,6 +57,87 @@
         initcommodityTable();
         tishi();
     })
+    var res;
+    function createAddContent(url){
+        $.ajax({
+            url:url,
+            async:false,//同步
+            success:function(data){
+                res = data;
+            }
+        });
+        return res;
+    }
+//导入INSTRBook（）
+    function INSTRBook() {
+            bootbox.dialog({
+                title:'Excel导入',
+                message: createAddContent("/ldl/toAddExcel"),
+                closeButton: true,//是否显示关闭按钮
+                buttons : {
+                    "success" : {
+                        "label" : "<i class='icon-ok'></i> 导入",
+                        "className" : "btn-sm btn-success",
+                        "callback" : function() {
+                            $.ajax({
+                                url:'/ldl/addCommodity',
+                                dataType: 'text',
+                                data:$("#poiForm").serialize(),
+                                success:function(data){
+                                   if(data){
+                                       sercherQuery();
+                                   }
+                                    alert("导入失败")
+                                }
+                            });
+                        }
+                    },
+                    "cancel" : {
+                        "label" : "<i class='icon-info'></i> 取消",
+                        "className" : "btn-sm btn-danger",
+                        "callback" : function() {
+
+                        }
+                    }
+                }
+
+            });
+
+
+
+        }
+    //导出daochu
+    function daochu() {
+        //获取所有被选中的记录
+        var books = $("#myTable").bootstrapTable('getSelections');
+        if (books.length== 0) {
+            alert("请先选择要导出的数据!");
+            return;
+        }
+        bootbox.confirm("你确定要导出吗?", function(result){
+            if(result){
+                var ids = '';
+                for (var i = 0; i < books.length; i++) {
+                    ids+=ids==""? books[i].id:","+books[i].id;
+                }
+                $.ajax({
+                    url:'../ldl/daochu',
+                    type:'post',
+                    data:{ids:ids},
+                    success:function(data){
+                        if(data){
+                            alert("导出成功")
+                            searchbook();
+                        }else{
+                            alert("导出失败")
+                        }
+                    }
+                })
+            }
+        })
+
+
+    }
     //批量删除
     function deleteBook() {
         //获取所有被选中的记录
@@ -129,7 +195,7 @@
             pagination:true,//是否展示分页
             showRefresh:true,
             pageNamber:1,//起始页
-            pageSize:2,//每页条数
+            pageSize:5,//每页条数
             pageList:[2,5,10,20],
             sidePagination:'server',//分页方式：client客户端分页，server服务端分页（*
             striped:true,//是否显示斑马线
@@ -141,22 +207,29 @@
             },
             columns:[
                 {field:"abc",checkbox:true},
-                {field:"number",title:"编号",width:150},
-                {field:"name",title:"名称",width:150},
+                {field:"number",title:"编号",width:100},
+                {field:"name",title:"名称",width:150,formatter:function(value,row,index){
+                    if(row.money==null || row.money=='' ||row.money=="-"){
+                        return "<font color='#ff0000'>"+value+"<font>";
+                    }else{
+                        return "<font color='#00ff00'>"+value+"<font>";
+                    }
+                    }},
                 {field:"datetime",title:"创建时间",width:150},
-                {field:"state",title:"是否上架",width:150,formatter:function(value,row,index){
+                {field:"state",title:"是否上架",width:50,formatter:function(value,row,index){
             if(row.state==1){
-                return "<font color='#00ff00'size=\"+3\">√<font>";
+                return "<font color='#00ff00'size=\"+5\">√<font>";
             }else{
-                return "<font color='#ff0000'size=\"+3\">×<font>";
+                return "<font color='#ff0000'size=\"+5\">×<font>";
             }
 
         }},
                 {field:"goodsname",title:"商品分类",width:150},
-                {field:"money",title:"商品价格",width:150},
+                {field:"money",title:"商品价格",width:50},
                 {field:"url",title:"路径",width:150},
                 {field:"url",title:"操作",width:150,formatter:function(value,row,index){
-                        var str = "<a href="+value+"><button class='btn btn-success glyphicon glyphicon-search'>查看</button></a>";
+                        var str = "<a href="+value+"><button class='btn btn-success glyphicon glyphicon-search'>查看</button></a>|";
+
                         return str;
                     }}
             ]

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <div th:include="index :: header" ></div>
+</head>
+
+<table id="myTable"></table>
+<body>
+<script>
+
+    $(function(){
+        initBrandTable();
+    })
+    function initBrandTable(){
+
+                $("#myTable").bootstrapTable({
+                url:'/ldl/queryBrand',
+                toolbar:'#toolbar',
+                method: 'post',
+                showRefresh:true,
+                contentType: 'application/x-www-form-urlencoded',//posti求按照表单方式
+                pagination:true,
+                pageList:[2,4,8,15,30],
+                pageNumber:1,
+                pageSize:2,
+                sidePagination:'server',
+                //是否显示斑马线
+                striped:true,
+                queryParams:function(){
+                    return {
+                        page:this.pageNumber,
+                        rows:this.pageSize
+                    };
+                },
+                columns:[
+                    {field:"abc",checkbox:true},
+
+                    {field:"name",title:"名称",width:150},
+                    {field : "logo",title : "logos",width:150,formatter : function(value, row, index) {
+
+                            var str = "<a href="+value+">查看</a>";
+                            return str;
+                        }},
+
+                    {field:"url",title:"网址",width:150,formatter : function(value, row, index) {
+
+                            var str = "<a href="+value+">"+value+"</a>";
+                            return str;
+                        }},
+                    {field:"sort",title:"排序",width:150},
+                    {field:"asd",title:"操作",width:150,formatter : function(value, row, index) {
+
+                            var str = "<a href="+row.site+">[查看]</a>";
+                            return str;
+
+                        }},
+
+
+
+                ]
+            })
+
+
+
+    }
+</script>
+</body>
+</html>

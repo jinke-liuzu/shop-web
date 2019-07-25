@@ -3,20 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <!--bootstrap样式-->
-    <link rel="stylesheet" href="/js/bootstrap3/css/bootstrap.css">
-    <link rel="stylesheet" href="/js/bootstrap3/css/bootstrap-theme.css">
-
-    <script src="/js/jquery.min.js"></script>
-    <!--弹框-->
-    <script src="/js/bootstrap-bootbox/bootbox.js"></script>
-
-    <script src="/js/bootstrap3/js/bootstrap.js"></script>
-
-    <link rel="stylesheet" href="/js/bootstrap-table/bootstrap-table.css">
-    <script src="/js/bootstrap-table/bootstrap-table.js"></script>
-    <script src="/js/bootstrap-table/bootstrap-table-locale-all.js"></script>
-    <script src="/js/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+    <div th:include="index :: header" ></div>
 
 </head>
 <body>
@@ -41,10 +28,11 @@
     $(function(){
         initInventoryTable();
     })
+
     //查询
     function initInventoryTable(){
         $("#myTable").bootstrapTable({
-            url:'/inventory/queryRepertory',
+            url:'/ldl/queryRepertory',
             toolbar:'#toolbar',
             method: 'post',
             showRefresh:true,
@@ -72,6 +60,7 @@
                 {field:"delivery",title:"出库数量",width:150},
                 {field:"current",title:"当前库存",width:150},
                 {field:"remark",title:"简介",width:150},
+                {field:"money",title:"单价",width:150},
                 {field:"createTimes",title:"创建日期",width:150}
 
             ]

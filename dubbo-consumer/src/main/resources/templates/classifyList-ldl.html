@@ -3,88 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <!--&lt;!&ndash;bootstrap样式&ndash;&gt;
-    <link rel="stylesheet" href="/js/bootstrap3/css/bootstrap.css">
-    <link rel="stylesheet" href="/js/bootstrap3/css/bootstrap-theme.css">
 
-    <script src="/js/jquery.min.js"></script>
-    &lt;!&ndash;弹框&ndash;&gt;
-    <script src="/js/bootstrap-bootbox/bootbox.js"></script>
+    <!--<link rel="stylesheet" href="/ldl/bootstrap-treegrid/dist/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/ldl/bootstrap-treegrid/dist/bootstrap-table/bootstrap-table.css">
+    <script src="/ldl/bootstrap-treegrid/dist/jquery/jquery-1.11.3.min.js"></script>
+    <script src="/ldl/bootstrap-treegrid/dist/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/ldl/bootstrap-treegrid/dist/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="/ldl/bootstrap-treegrid/dist/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>-->
 
-    <script src="/js/bootstrap3/js/bootstrap.js"></script>
+    <div th:include="index :: header" ></div>
+    <script src="/js/ldl/bootstrap-treegrid/src/bootstrap-treegrid.min.js"></script>
+    <script type="text/javascript" src="/js/ldl/bootstrap-treegrid/src/area.js"></script>
 
-    <link rel="stylesheet" href="/js/bootstrap-table/bootstrap-table.css">
-    <script src="/js/bootstrap-table/bootstrap-table.js"></script>
-    <script src="/js/bootstrap-table/bootstrap-table-locale-all.js"></script>
-    <script src="/js/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+    <!--<script type="text/javascript" src="../js/bootbox/bootbox.js" ></script>-->
 
-    &lt;!&ndash; 时间 &ndash;&gt;
-    <link rel="stylesheet" href="/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
-    <script src="/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
-    <script src="/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>-->
-    <link rel="stylesheet" href="/ldl/js/bootstrap3/css/bootstrap.css">
-    <link rel="stylesheet" href="/ldl/js/bootstrap3/css/bootstrap-theme.css">
-    <script src="/ldl/js/jquery.min.js"></script>
-    <!---->
-    <!--弹框-->
-    <script type="text/javascript" src="/ldl/js/bootstrap-bootbox/bootbox.js"></script>
 
-    <script type="text/javascript" src="/ldl/js/bootstrap3/js/bootstrap.js"></script>
-
-    <link rel="stylesheet" href="/ldl/js/bootstrap-table/bootstrap-table.css">
-    <script type="text/javascript" src="/ldl/js/bootstrap-table/bootstrap-table.js"></script>
-    <script type="text/javascript" src="/ldl/js/bootstrap-table/bootstrap-table-locale-all.js"></script>
-    <script type="text/javascript" src="/ldl/js/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
-    <!-- 时间 -->
-    <link rel="stylesheet" href="/ldl/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
-
-    <script src="/ldl/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
-    <script src="/ldl/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-TW.js"></script>
 </head>
 <body>
 <button type="button" onclick="addBook()" class="btn btn-info glyphicon glyphicon-plus">新增</button>
+<button type="button" onclick="deleteLabel()" class="btn btn-warning "><span class="glyphicon glyphicon-trash">批删</span> </button>
 
-<table class="table" id="myTable"></table>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-10">
+<table class="table" id="tb"></table>
+        </div>
+    </div>
+</div>
 
 </body>
 <script>
     $(function(){
-        initBookTable();
+       tree();
     })
-    //查询
-    function initBookTable(){
-        $("#myTable").bootstrapTable({
-            url:'/ldl/queryclassify',
-            toolbar:'#toolbar',
-            method: 'post',
-            contentType: 'application/x-www-form-urlencoded',//posti求按照表单方式
-            pagination:true,//是否展示分页
-            showRefresh:true,
-            pageNamber:1,//起始页
-            pageSize:2,//每页条数
-            pageList:[2,5,10,20],
-            sidePagination:'server',//分页方式：client客户端分页，server服务端分页（*
-            striped:true,//是否显示斑马线
-            queryParams:function(){
-                return {
-                    page:this.pageNumber,
-                    rows:this.pageSize
-                };
-            },
-            columns:[
-                {field:"text",title:"名称"},
-                {field:"order",title:"排序",width:150},
-                {field:"generalstore",title:"普通店铺分佣比例",width:150},
-                {field:"ownstores",title:"自营店铺分佣比例",width:150},
-                {field:"url",title:"操作",formatter:function(value,row,index){
-                        var str = "<a href="+value+">&nbsp;&nbsp;查看&nbsp;&nbsp;</a>";
-                         str += "|<a href='javascript:editbook("+row.id+")'>&nbsp;&nbsp;修改&nbsp;&nbsp;</a>";
-                        str+="|<a href='javascript:deleteOne("+row.id+")'>&nbsp;删除&nbsp;</a>";
-                        return str;
-                    }}
-            ]
-        })
+
+    /*var tempData = [
+        { "id": 1, "text": "集团总部", "pid": 0, "Status": 1 },
+        { "id": 2, "text": "研发中心", "pid": 1, "Status": 1 },
+        { "id": 3, "text": "软件开发部", "pid": 2, "Status": 1 },
+        { "id": 4, "text": "硬件开发部", "pid": 2, "Status": 1 },
+        { "id": 5, "text": "商务部", "pid": 1, "Status": 1 },
+        { "id": 6, "text": "华南区", "pid": 5, " Status": 1 },
+        { "id": 7, "text": "华北区", "pid": 5, "Status": 1 },
+        { "id": 8, "text": "客服部", "pid": 1, "Status": 1 }
+    ];*/
+//
+    function tree(){
+    $('#tb').bootstrapTable({
+    method: 'post',
+    url: '/ldl/tree',
+    /*data: tempData,*/
+        singleSelect: true,//单行选择
+        clickToSelect: true,//点击行时自动选择
+        striped: true,//是否显示行间隔色
+        treeView: true,//是否显示树形视图
+        treeId: "id",//定义关键字段来标识树节点
+        treeField: "text",//定义树节点字段
+        treeParentId: "pid", //定义父级ID字段
+        treeRootLevel: 1,//树根的级别
+        treeCollapseAll: false,//是否全部折叠，默认折叠
+        cascadeCheck: false,//是否层叠选中状态(选中父级，子级全部选中) true=层叠选中，需要singleSelect: false；false=不是层叠选中
+        uniqueId: "id", //每一行的唯一标识，一般为主键列
+        columns:
+    [
+        {field:"abc",checkbox:true},
+        { field: 'pid', title: '上级ID', visible: false },
+        { field: 'text', title: '机构名称' },
+        { field: 'pid', title: 'pid' },
+        {field:"generalstore",title:"普通店铺分佣比例"},
+        {field:"ownstores",title:"自营店铺分佣比例"},
+        {field:"url",title:"操作",formatter:function(value,row,index){
+                var str = "<a href="+value+">&nbsp;&nbsp;查看&nbsp;&nbsp;</a>";
+                str += "|<a href='javascript:editbook("+row.id+")'>&nbsp;&nbsp;修改&nbsp;&nbsp;</a>";
+                str+="|<a href='javascript:deleteOne("+row.id+")'>&nbsp;删除&nbsp;</a>";
+                return str;
+            } }
+    ]
+    });
     }
+
     function deleteOne(id){
         var msg = "您真的确定要删除吗？\n\n请确认！";
 
@@ -95,7 +96,8 @@
                 data:{id:id},
                 success:function(data){
                     if(data){
-                        $("#myTable").bootstrapTable('refresh')
+                        tree();
+                       /* $("#myTable").bootstrapTable('refresh')*/
                     }
                 }
             })
